@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인터랙티브 기계학습 유형별 실습</title>
+    <style>
+        /* 기본 스타일 */
+        :root {
+            --c-blue: #3498db; --c-green: #2ecc71; --c-yellow: #f1c40f;
+            --c-purple: #9b59b6; --c-orange: #e67e22; --c-red: #e74c3c;
+            --c-dark: #2c3e50; --c-light: #ecf0f1; --c-white: #ffffff;
+        }
+        body {
+            font-family: 'Segoe UI', Roboto, 'Noto Sans KR', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f6;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .main-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 슬라이더 컨테이너 */
+        .slider-container {
+            width: 100%;
+            max-width: 1100px;
+            height: 88vh; /* 높이 살짝 줄임 */
+            max-height: 780px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            background-color: var(--c-white);
+        }
+
+        /* 슬라이더 래퍼: 실제 움직이는 부분 */
+        .slider-wrapper {
+            display: flex;
+            height: 100%;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        /* 개별 슬라이드(섹션) */
+        .ml-section {
+            min-width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            padding: 25px 40px;
+            overflow-y: auto;
+        }
+        .ml-section h2 {
+            font-size: 1.8em; color: var(--c-dark); margin-top: 0;
+            border-bottom: 3px solid var(--c-light); padding-bottom: 10px;
+            display: flex; align-items: center;
+        }
+        .ml-section h2 .icon { margin-right: 15px; font-size: 1.2em; }
+        .ml-section > p.description { margin-bottom: 20px; font-size: 1.05em; color: #555;}
+
+        /* 카드 그리드 & 카드 */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .card { background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 15px; }
+        .card h3 { font-size: 1.1em; margin: 0 0 5px 0; }
+        .card p { font-size: 0.9em; margin: 0; }
+
+        /* 인터랙티브 활동 영역 */
+        .interactive-activity {
+            padding: 20px; border-radius: 8px; border: 2px dashed #dde4e9; text-align: center;
+        }
+        .interactive-activity h3 { margin: 0 0 15px 0; color: var(--c-dark); }
+        .activity-content { min-height: 140px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .activity-nav { margin-top: 15px; }
+        .next-activity-btn {
+            background-color: #6c757d; color: white; border: none; padding: 8px 15px;
+            border-radius: 5px; cursor: pointer; transition: background-color 0.2s;
+        }
+        .next-activity-btn:hover { background-color: #5a6268; }
+        .activity-result { margin-top: 15px; font-weight: bold; min-height: 24px; font-size: 1.05em; }
+        .interactive-activity button {
+            padding: 10px 20px; border: none; border-radius: 5px;
+            color: var(--c-white); font-size: 1em; cursor: pointer; transition: opacity 0.2s; margin: 0 5px;
+        }
+        .interactive-activity button:hover { opacity: 0.85; }
+
+        /* 네비게이션 화살표 */
+        .nav-arrow {
+            position: absolute; top: 50%; transform: translateY(-50%); width: 50px; height: 50px;
+            background-color: rgba(0,0,0,0.4); color: white; border-radius: 50%; display: flex;
+            justify-content: center; align-items: center; font-size: 24px; cursor: pointer;
+            z-index: 10; user-select: none; transition: background-color 0.2s;
+        }
+        .nav-arrow:hover { background-color: rgba(0,0,0,0.6); }
+        #prevBtn { left: 20px; }
+        #nextBtn { right: 20px; }
+        
+        /* 섹션별 테마 색상 적용 */
+        .classification { --theme-color: var(--c-blue); } .prediction { --theme-color: var(--c-green); }
+        .clustering { --theme-color: var(--c-yellow); } .recognition { --theme-color: var(--c-purple); }
+        .nlp { --theme-color: var(--c-orange); } .generation { --theme-color: var(--c-red); }
+        .ml-section h2 { border-color: var(--theme-color); }
+        .card h3 { color: var(--theme-color); }
+        .interactive-activity .main-action-btn { background-color: var(--theme-color); }
+
+        /* 활동별 커스텀 스타일 */
+        .activity-content img { max-width: 150px; max-height: 100px; border-radius: 8px; margin-bottom: 10px; border: 2px solid #ddd; }
+        .activity-content .text-block { background-color: #f0f0f0; padding: 10px; border-radius: 5px; margin-bottom: 10px; border-left: 3px solid var(--theme-color); }
+        .activity-content input[type="range"], .activity-content input[type="number"] { width: 120px; margin: 5px; }
+        .activity-content textarea, .activity-content input[type="text"] { width: 80%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; font-size: 0.9em; margin-bottom: 10px;}
+        .controls-container { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        #clustering-canvas { position: relative; width: 300px; height: 150px; margin: 0 auto 10px; border: 1px solid #ccc; background: #fafafa; }
+        .cluster-dot { position: absolute; width: 10px; height: 10px; border-radius: 50%; transition: background-color 0.5s; }
+        #recognition-canvas { position: relative; width: 300px; height: 150px; margin: 0 auto 10px; background-size: cover; background-position: center; border-radius: 8px;}
+        .bounding-box { position: absolute; border: 3px solid; box-sizing: border-box; opacity: 0; transition: opacity 0.5s; border-radius: 4px; }
+        .bounding-box::after { content: attr(data-label); background-color: inherit; color: white; padding: 2px 5px; font-size: 12px; position: absolute; top: -22px; left: -3px; border-radius: 3px;}
+
+        footer {
+            margin-top: 1vh;
+            font-size: 0.9em;
+            color: #777;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="main-wrapper">
+        <div class="slider-container">
+            <div class="slider-wrapper">
+                <section class="ml-section classification">
+                    <h2><span class="icon">📊</span>분류 (Classification)</h2>
+                    <p class="description">주어진 데이터를 정해진 카테고리 중 하나로 구분하는 문제입니다.</p>
+                    <div class="card-grid">
+                        <div class="card"><h3>꽃 품종 분류하기</h3><p>꽃받침, 꽃잎의 길이와 너비로 어떤 품종의 붓꽃(Iris)인지 맞춥니다.</p></div>
+                        <div class="card"><h3>손글씨 숫자 판별</h3><p>0부터 9까지 손으로 쓴 숫자 이미지를 보고 어떤 숫자인지 판별합니다.</p></div>
+                        <div class="card"><h3>스팸 메일 필터링</h3><p>메일 내용을 분석하여 스팸 메일인지 정상 메일인지 구분합니다.</p></div>
+                        <div class="card"><h3>타이타닉 생존자 예측</h3><p>승객 정보로 타이타닉 호 사고의 생존 여부를 예측합니다.</p></div>
+                        <div class="card"><h3>와인 종류 구분</h3><p>와인의 성분 데이터로 레드 와인인지 화이트 와인인지 구분합니다.</p></div>
+                    </div>
+                    <div class="interactive-activity">
+                        <h3>활동: 직접 분류해보기</h3>
+                        <div class="activity-content" data-section="classification"></div>
+                        <div class="activity-result" data-section="classification"></div>
+                        <div class="activity-nav">
+                            <button class="next-activity-btn" data-section="classification">다른 예제 보기 ↺</button>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="ml-section prediction">
+                    <h2><span class="icon">📈</span>예측 (Prediction / Regression)</h2>
+                    <p class="description">데이터를 바탕으로 미래의 특정 연속적인 값(숫자)을 예측하는 문제입니다.</p>
+                    <div class="card-grid">
+                        <div class="card"><h3>주택 가격 예측</h3><p>집의 크기, 방의 개수, 위치 등의 특징으로 주택의 가격을 예측합니다.</p></div>
+                        <div class="card"><h3>중고차 가격 예측</h3><p>자동차 모델, 연식, 주행거리로 중고차의 적정 판매 가격을 예측합니다.</p></div>
+                        <div class="card"><h3>내일의 최고기온 예측</h3><p>과거 날씨 데이터를 학습하여 내일의 최고 기온이 몇 도일지 예측합니다.</p></div>
+                        <div class="card"><h3>성적 예측 모델</h3><p>학생의 공부 시간, 이전 성적 등으로 다음 시험의 성적을 예측합니다.</p></div>
+                        <div class="card"><h3>유튜브 조회수 예측</h3><p>영상 업로드 시간, 제목 길이, 태그 개수로 영상 조회수를 예측해 봅니다.</p></div>
+                    </div>
+                    <div class="interactive-activity">
+                        <h3>활동: 직접 예측해보기</h3>
+                        <div class="activity-content" data-section="prediction"></div>
+                        <div class="activity-result" data-section="prediction"></div>
+                        <div class="activity-nav">
+                            <button class="next-activity-btn" data-section="prediction">다른 예제 보기 ↺</button>
+                        </div>
+                    </div>
+                </section>
+                
+                <section class="ml-section clustering">
+                    <h2><span class="icon">🧩</span>군집 (Clustering)</h2>
+                    <p class="description">정답이 없는 데이터들을 비슷한 특성을 가진 그룹으로 자동 분류하는 문제입니다.</p>
+                    <div class="card-grid">
+                        <div class="card"><h3>고객 그룹 나누기</h3><p>고객의 구매 패턴을 분석하여 VIP, 일반 고객 그룹으로 분류합니다.</p></div>
+                        <div class="card"><h3>뉴스 기사 그룹화</h3><p>온라인 뉴스들을 내용의 유사도에 따라 정치, 경제, 사회 등으로 묶습니다.</p></div>
+                        <div class="card"><h3>이미지 색상 추출</h3><p>사진 속 픽셀들을 군집화하여 이미지의 대표 색상들을 추출합니다.</p></div>
+                        <div class="card"><h3>음악 추천 시스템</h3><p>비슷한 취향을 가진 사용자 그룹을 찾아 새로운 음악을 추천해줍니다.</p></div>
+                        <div class="card"><h3>선수 포지션 군집화</h3><p>선수 기록을 바탕으로 가드, 포워드, 센터 같은 포지션 그룹으로 묶습니다.</p></div>
+                    </div>
+                    <div class="interactive-activity">
+                        <h3>활동: 데이터 그룹화하기</h3>
+                        <div class="activity-content" data-section="clustering"></div>
+                        <div class="activity-result" data-section="clustering"></div>
+                        <div class="activity-nav">
+                            <button class="next-activity-btn" data-section="clustering">다른 예제 보기 ↺</button>
+                        </div>
+                    </div>
+                </section>
+                
+                <section class="ml-section recognition">
+                    <h2><span class="icon">👁️</span>인식 (Recognition)</h2>
+                    <p class="description">이미지나 음성 데이터 속에서 특정 객체나 패턴을 식별하는 문제입니다.</p>
+                    <div class="card-grid">
+                        <div class="card"><h3>얼굴 인식 출석체크</h3><p>웹캠으로 학생 얼굴을 인식하여 자동으로 출석을 체크합니다.</p></div>
+                        <div class="card"><h3>자동차 번호판 인식</h3><p>카메라 이미지에서 자동차 번호판 영역과 글자를 인식합니다.</p></div>
+                        <div class="card"><h3>반려동물 품종 인식</h3><p>사진을 업로드하면 어떤 품종인지 알려주는 앱을 개발합니다.</p></div>
+                        <div class="card"><h3>음성 명령 인식</h3><p>음성을 텍스트로 변환하고 의미를 파악하여 기기를 제어합니다.</p></div>
+                        <div class="card"><h3>불량품 검출 시스템</h3><p>공장 제품 이미지를 분석하여 불량품을 자동으로 구별합니다.</p></div>
+                    </div>
+                    <div class="interactive-activity">
+                        <h3>활동: 이미지 속 객체 인식하기</h3>
+                        <div class="activity-content" data-section="recognition"></div>
+                        <div class="activity-result" data-section="recognition"></div>
+                        <div class="activity-nav">
+                            <button class="next-activity-btn" data-section="recognition">다른 예제 보기 ↺</button>
+                        </div>
+                    </div>
+                </section>
+                
+                <section class="ml-section nlp">
+                    <h2><span class="icon">💬</span>자연어 처리 (NLP)</h2>
+                    <p class="description">사람이 사용하는 언어를 컴퓨터가 이해하고 처리하도록 만드는 기술입니다.</p>
+                    <div class="card-grid">
+                        <div class="card"><h3>영화 리뷰 감성 분석</h3><p>리뷰 텍스트를 분석하여 긍정적인지, 부정적인지 판단합니다.</p></div>
+                        <div class="card"><h3>간단한 챗봇 만들기</h3><p>자주 묻는 질문(FAQ)에 자동으로 답변해주는 챗봇을 만듭니다.</p></div>
+                        <div class="card"><h3>문서 요약기</h3><p>긴 뉴스 기사를 입력하면 핵심 문장 3줄로 요약해줍니다.</p></div>
+                        <div class="card"><h3>악성 댓글 탐지</h3><p>댓글을 분석하여 욕설이나 비방 등 부적절한 내용을 필터링합니다.</p></div>
+                        <div class="card"><h3>기계 번역기</h3><p>한국어 문장을 입력하면 영어 문장으로 번역하는 모델을 만듭니다.</p></div>
+                    </div>
+                    <div class="interactive-activity">
+                        <h3>활동: 자연어 처리 작업하기</h3>
+                        <div class="activity-content" data-section="nlp"></div>
+                        <div class="activity-result" data-section="nlp"></div>
+                        <div class="activity-nav">
+                            <button class="next-activity-btn" data-section="nlp">다른 예제 보기 ↺</button>
+                        </div>
+                    </div>
+                </section>
+                
+                <section class="ml-section generation">
+                    <h2><span class="icon">🎨</span>생성 (Generation)</h2>
+                    <p class="description">기존 데이터를 학습하여 새로운 데이터(글, 그림, 음악 등)를 창작하는 문제입니다.</p>
+                    <div class="card-grid">
+                        <div class="card"><h3>AI 작곡가</h3><p>유명 작곡가들의 음악을 학습시켜 비슷한 스타일의 새 멜로디를 생성합니다.</p></div>
+                        <div class="card"><h3>소설/시 이어쓰기</h3><p>이야기의 첫 문장을 입력하면 AI가 그 다음 내용을 이어서 써줍니다.</p></div>
+                        <div class="card"><h3>텍스트로 이미지 생성</h3><p>설명을 입력하면 설명에 맞는 독창적인 이미지를 생성합니다.</p></div>
+                        <div class="card"><h3>가상 인물 사진 생성</h3><p>학습을 통해 세상에 존재하지 않는 새로운 사람의 얼굴 사진을 만듭니다.</p></div>
+                        <div class="card"><h3>게임 캐릭터/맵 생성</h3><p>새로운 디자인의 캐릭터를 생성하거나 게임 맵을 자동으로 만듭니다.</p></div>
+                    </div>
+                    <div class="interactive-activity">
+                        <h3>활동: AI로 생성하기</h3>
+                        <div class="activity-content" data-section="generation"></div>
+                        <div class="activity-result" data-section="generation"></div>
+                        <div class="activity-nav">
+                            <button class="next-activity-btn" data-section="generation">다른 예제 보기 ↺</button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            
+            <div class="nav-arrow" id="prevBtn">&lt;</div>
+            <div class="nav-arrow" id="nextBtn">&gt;</div>
+        </div>
+        <footer>
+            <p>만든이 by 깐깐샘</p>
+        </footer>
+    </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const wrapper = document.querySelector('.slider-wrapper');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        let currentIndex = 0;
+        const totalSlides = 6;
+
+        function goToSlide(index) {
+            currentIndex = (index + totalSlides) % totalSlides;
+            wrapper.style.transform = `translateX(-${currentIndex * 100}%)`;
+        }
+
+        prevBtn.addEventListener('click', () => goToSlide(currentIndex - 1));
+        nextBtn.addEventListener('click', () => goToSlide(currentIndex + 1));
+        
+        const activityData = {
+            classification: [
+                { type: 'image', q: '이 동물은 무엇일까요?', options: ['강아지', '고양이'], answer: '고양이', data: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Cat_November_2010-1a.jpg/1200px-Cat_November_2010-1a.jpg' },
+                { type: 'text', q: '이 메일 제목은 스팸일까요?', options: ['스팸', '정상'], answer: '스팸', data: '광고) 대박찬스! 오늘만 할인!' },
+                { type: 'image', q: '손글씨 숫자는 무엇일까요?', options: ['7', '1', '8'], answer: '7', data: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAIQSURBVHhe7dwhSgNBFMbhpjQ3sARrC4t4AS9gC9Z2FnYWXkARL2Er2Npa2IsNSN4hMvA6OIOK+/7gDcl/ySRJkv4xs4FzXn9fWw87+3nmvP7t7T1sL7/CTs/p+9A6wU6P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/-f8L5gJ2f/787c/9n/h/hP3zTCTJNk5/YAAAAASUVORK5CYII=' },
+                { type: 'text', q: '이 과일은 채소일까요, 과일일까요?', options: ['채소', '과일'], answer: '과일', data: '토마토' },
+                { type: 'data', q: '타이타닉호의 이 승객은 생존했을까요?', options: ['생존', '사망'], answer: '생존', data: '나이: 25세, 성별: 여성, 좌석: 1등석' },
+            ],
+            prediction: [
+                { type: 'slider', q: '조건에 따른 집값 예측하기', controls: [{label: '방 개수', min:1, max:5, value:3, id:'rooms'}, {label: '역과의 거리(분)', min:1, max:30, value:10, id:'distance'}], formula: (vals) => `예상 가격: ${(20000 + vals[0]*5000 - vals[1]*800).toLocaleString()} 만원` },
+                { type: 'slider', q: '중고차 가격 예측하기', controls: [{label: '연식(년)', min:2010, max:2023, value:2018, id:'year'}, {label: '주행거리(만km)', min:1, max:20, value:8, id:'km'}], formula: (vals) => `예상 가격: ${(3500 - (2023-vals[0])*150 - vals[1]*30).toLocaleString()} 만원` },
+                { type: 'input', q: '공부 시간에 따른 성적 예측하기', label: '오늘 공부 시간(시간)', formula: (val) => `예상 점수: ${Math.min(100, 50 + val * 8)}점` },
+                { type: 'slider', q: '유튜브 조회수 예측하기', controls: [{label: '영상 길이(분)', min:1, max:20, value:10, id:'length'}, {label: '썸네일 매력도', min:1, max:10, value:5, id:'thumb'}], formula: (vals) => `24시간 후 예상 조회수: ${(vals[0]*100 + vals[1]*1000).toLocaleString()}회` },
+                { type: 'input', q: '기온 예측하기', label: '현재 풍속(m/s)', formula: (val) => `1시간 뒤 예상 체감온도: ${(15 - val*1.5).toFixed(1)}°C` },
+            ],
+            clustering: [
+                 { q: '고객 그룹화하기', desc: '구매액과 방문 빈도에 따라 고객 그룹을 나눠봅니다.', dots: Array(30).fill(0).map(()=>({x: Math.random()<0.5 ? Math.random()*40: 60+Math.random()*40, y: Math.random()<0.5 ? Math.random()*40: 60+Math.random()*40})), logic: (dot) => (parseFloat(dot.style.left) < 50 ? 'var(--c-blue)' : 'var(--c-red)')},
+                 { q: '뉴스 기사 그룹화하기', desc: '키워드 유사도에 따라 기사들을 그룹화합니다.', dots: Array(30).fill(0).map(()=>({x: Math.random()*80+10, y: Math.random()*80+10})), logic: (dot) => {const x=parseFloat(dot.style.left); const y=parseFloat(dot.style.top); if(x<33) return 'var(--c-blue)'; if(x<66) return 'var(--c-green)'; return 'var(--c-red)';}},
+                 { q: '동물 그룹화하기', desc: '무게와 속도를 기준으로 동물들을 그룹화합니다.', dots: Array(30).fill(0).map(()=>({x: Math.random()*40, y: 60+Math.random()*30})).concat(Array(15).fill(0).map(()=>({x: 60+Math.random()*30, y: Math.random()*40}))), logic: (dot) => (parseFloat(dot.style.top) > 50 ? 'var(--c-orange)' : 'var(--c-purple)')},
+            ],
+            recognition: [
+                { q: '거리에서 객체 인식하기', image: 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?q=80&w=2070&auto=format&fit=crop', boxes: [{label: 'House', top: '15%', left: '15%', width: '70%', height: '70%', color: 'var(--c-blue)'}, {label: 'Tree', top: '10%', left: '75%', width: '20%', height: '70%', color: 'var(--c-green)'}]},
+                { q: '과일 인식하기', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Culinary_fruits_front_view.jpg/1920px-Culinary_fruits_front_view.jpg', boxes: [{label: 'Apple', top: '30%', left: '45%', width: '40%', height: '45%', color: 'var(--c-red)'}, {label: 'Orange', top: '10%', left: '10%', width: '30%', height: '40%', color: 'var(--c-orange)'}]},
+                { q: '얼굴에서 특징점 인식하기', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1974&auto=format&fit=crop', boxes: [{label: 'Eye', top: '40%', left: '30%', width: '15%', height: '10%', color: 'var(--c-blue)'}, {label: 'Eye', top: '40%', left: '55%', width: '15%', height: '10%', color: 'var(--c-blue)'}, {label: 'Nose', top: '50%', left: '45%', width: '10%', height: '15%', color: 'var(--c-green)'}, {label: 'Mouth', top: '68%', left: '40%', width: '20%', height: '10%', color: 'var(--c-red)'}]},
+            ],
+            nlp: [
+                { type: 'sentiment', q: '문장 감성 분석하기', placeholder: '이 영화 정말 최고예요!', button: '분석', logic: (text)=>{ const pos = ['좋아', '최고', '재미있', '행복']; const neg = ['싫어', '최악', '끔찍', '지루']; if(pos.some(w=>text.includes(w)) && !neg.some(w=>text.includes(w))) return {res: '긍정적인 문장입니다 😊', color:'green'}; if(neg.some(w=>text.includes(w))  && !pos.some(w=>text.includes(w))) return {res:'부정적인 문장입니다 😠', color:'red'}; return {res:'중립적인 문장입니다 🤔', color:'gray'};}},
+                { type: 'keyword', q: '문서에서 키워드 추출하기', placeholder: '대한민국 경제는 반도체 산업에 크게 의존합니다.', button: '추출', logic: (text)=>{ return {res: `핵심 키워드: [대한민국], [경제], [반도체]`, color: 'var(--c-dark)'};}},
+                { type: 'chatbot', q: '간단한 챗봇에게 질문하기', placeholder: '운영시간 알려줘', button: '전송', logic: (text)=>{ if(text.includes('운영') || text.includes('시간')) return {res:'평일 오전 9시부터 오후 6시까지입니다.', color: 'var(--c-blue)'}; return {res: '죄송해요, 잘 모르는 질문이에요.', color:'gray'};}},
+            ],
+            generation: [
+                { type: 'image', q: '텍스트로 이미지 생성하기', placeholder: '밤하늘을 나는 고래', button: '생성', data: ['https://images.unsplash.com/photo-1679403764832-463c68326260?q=80&w=1964&auto=format&fit=crop', 'https://images.unsplash.com/photo-1664426429594-3fe4638a5327?q=80&w=1964&auto=format&fit=crop']},
+                { type: 'text', q: '시의 첫 구절 생성하기', placeholder: '주제: 바다', button: '생성', logic: (p) => `"${p}"(이)라는 주제로 생성된 시입니다: <br><strong>푸른 물결, 하얀 포말, 끝없는 지평선...</strong>`},
+                { type: 'code', q: '설명으로 코드 생성하기', placeholder: '// 두 숫자를 더하는 함수', button: '생성', logic: (p) => `요청하신 코드입니다: <br><code style="background:#eee; padding:5px; border-radius:4px;">function sum(a, b) {<br>&nbsp;&nbsp;return a + b;<br>}</code>`},
+            ]
+        };
+        
+        const activityIndexes = {};
+        Object.keys(activityData).forEach(section => activityIndexes[section] = 0);
+
+        function loadActivity(section) {
+            const contentEl = document.querySelector(`.activity-content[data-section="${section}"]`);
+            const resultEl = document.querySelector(`.activity-result[data-section="${section}"]`);
+            if (!activityData[section] || activityData[section].length === 0) return;
+            
+            const activityIndex = activityIndexes[section];
+            const data = activityData[section][activityIndex];
+            
+            contentEl.innerHTML = '';
+            resultEl.innerHTML = '';
+            
+            let html = `<p>${data.q}</p>`;
+
+            switch(section) {
+                case 'classification':
+                    if (data.type === 'image') html += `<img src="${data.data}" alt="분류 문제">`;
+                    if (data.type === 'text' || data.type === 'data') html += `<div class="text-block">${data.data}</div>`;
+                    html += '<div>';
+                    data.options.forEach(opt => {
+                        html += `<button class="main-action-btn" onclick="checkAnswer('${section}', '${opt}')">${opt}</button>`;
+                    });
+                    html += '</div>';
+                    break;
+                case 'prediction':
+                    html += '<div class="controls-container">';
+                    if(data.type === 'slider') {
+                        data.controls.forEach(c => {
+                            html += `<div><label>${c.label}: <span id="${c.id}-val">${c.value}</span></label> <input type="range" id="${c.id}" min="${c.min}" max="${c.max}" value="${c.value}" oninput="updatePrediction('${section}')"></div>`;
+                        });
+                    } else if (data.type === 'input') {
+                         html += `<div><label>${data.label}: </label><input type="number" id="pred-input" value="3" oninput="updatePrediction('${section}')"></div>`;
+                    }
+                    html += '</div>';
+                    break;
+                case 'clustering':
+                    html += `<p style="font-size:0.9em; color:#555;">${data.desc}</p><div id="clustering-canvas"></div>`;
+                    html += `<button class="main-action-btn" onclick="runClustering()">그룹화 실행</button>`;
+                    break;
+                case 'recognition':
+                    html += `<div id="recognition-canvas" style="background-image: url('${data.image}');"></div>`;
+                    html += `<button class="main-action-btn" onclick="runRecognition()">객체 인식 실행</button>`;
+                    break;
+                case 'nlp':
+                    html += `<textarea id="nlp-input" rows="3" placeholder="${data.placeholder}"></textarea>`;
+                    html += `<div><button class="main-action-btn" onclick="runNlp()">${data.button}</button></div>`;
+                    break;
+                case 'generation':
+                    html += `<input type="text" id="gen-input" placeholder="${data.placeholder}">`;
+                    html += `<div><button class="main-action-btn" onclick="runGeneration()">${data.button}</button></div>`;
+                    break;
+            }
+            contentEl.innerHTML = html;
+
+            if (section === 'prediction') updatePrediction(section);
+            if (section === 'clustering') setupClustering();
+            if (section === 'recognition') setupRecognition();
+        }
+
+        window.checkAnswer = (section, userAnswer) => {
+            const resultEl = document.querySelector(`.activity-result[data-section="${section}"]`);
+            const correctAnswer = activityData[section][activityIndexes[section]].answer;
+            resultEl.innerHTML = (userAnswer === correctAnswer) ? '정답입니다! 🎉' : `아쉽네요. 정답은 "${correctAnswer}"입니다.`;
+            resultEl.style.color = (userAnswer === correctAnswer) ? 'green' : 'red';
+        };
+
+        window.updatePrediction = (section) => {
+            const resultEl = document.querySelector(`.activity-result[data-section="${section}"]`);
+            const data = activityData[section][activityIndexes[section]];
+            let values = [];
+            if(data.type === 'slider') {
+                data.controls.forEach(c => {
+                    const el = document.getElementById(c.id);
+                    document.getElementById(`${c.id}-val`).textContent = el.value;
+                    values.push(parseFloat(el.value));
+                });
+            } else {
+                values.push(parseFloat(document.getElementById('pred-input').value) || 0);
+            }
+            resultEl.textContent = data.formula(values);
+        };
+        
+        window.setupClustering = () => {
+            const canvas = document.getElementById('clustering-canvas');
+            const data = activityData.clustering[activityIndexes.clustering];
+            canvas.innerHTML = '';
+            data.dots.forEach(d => {
+                const dot = document.createElement('div');
+                dot.className = 'cluster-dot';
+                dot.style.left = `${d.x}%`;
+                dot.style.top = `${d.y}%`;
+                dot.style.backgroundColor = '#aaa';
+                canvas.appendChild(dot);
+            });
+        };
+        
+        window.runClustering = () => {
+            const canvas = document.getElementById('clustering-canvas');
+            const data = activityData.clustering[activityIndexes.clustering];
+            Array.from(canvas.children).forEach(dot => {
+                dot.style.backgroundColor = data.logic(dot);
+            });
+            document.querySelector('.activity-result[data-section="clustering"]').textContent = '데이터 그룹화가 완료되었습니다.';
+        };
+        
+        window.setupRecognition = () => {
+            const canvas = document.getElementById('recognition-canvas');
+            const data = activityData.recognition[activityIndexes.recognition];
+            canvas.innerHTML = '';
+            data.boxes.forEach(b => {
+                const box = document.createElement('div');
+                box.className = 'bounding-box';
+                box.dataset.label = b.label;
+                box.style.cssText = `top:${b.top}; left:${b.left}; width:${b.width}; height:${b.height}; border-color:${b.color};`;
+                canvas.appendChild(box);
+            });
+        };
+
+        window.runRecognition = () => {
+            document.querySelectorAll('#recognition-canvas .bounding-box').forEach(box => box.style.opacity = '1');
+            document.querySelector('.activity-result[data-section="recognition"]').textContent = '객체 인식이 완료되었습니다.';
+        };
+        
+        window.runNlp = () => {
+            const resultEl = document.querySelector('.activity-result[data-section="nlp"]');
+            const data = activityData.nlp[activityIndexes.nlp];
+            const text = document.getElementById('nlp-input').value;
+            const result = data.logic(text);
+            resultEl.textContent = result.res;
+            resultEl.style.color = result.color;
+        };
+        
+        window.runGeneration = () => {
+            const resultEl = document.querySelector('.activity-result[data-section="generation"]');
+            const data = activityData.generation[activityIndexes.generation];
+            const text = document.getElementById('gen-input').value;
+            if(!text) { resultEl.innerHTML = '<p style="color:red;">설명을 입력해주세요!</p>'; return; }
+            
+            let htmlResult = '';
+            if(data.type === 'image'){
+                const img = data.data[Math.floor(Math.random() * data.data.length)];
+                htmlResult = `<p>"<strong>${text}</strong>" 생성 결과</p><img src="${img}" alt="생성된 이미지">`;
+            } else {
+                htmlResult = data.logic(text);
+            }
+            resultEl.innerHTML = htmlResult;
+        };
+
+        document.querySelectorAll('.next-activity-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const section = btn.dataset.section;
+                activityIndexes[section] = (activityIndexes[section] + 1) % activityData[section].length;
+                loadActivity(section);
+            });
+        });
+
+        Object.keys(activityData).forEach(section => loadActivity(section));
+    });
+</script>
+</body>
+</html>
