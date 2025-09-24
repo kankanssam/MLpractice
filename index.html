@@ -3,13 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>인터랙티브 기계학습 유형별 실습</title>
+    <title>인터랙티브 기계학습 유형별 실습 (반응형)</title>
     <style>
         /* 기본 스타일 */
         :root {
             --c-blue: #3498db; --c-green: #2ecc71; --c-yellow: #f1c40f;
             --c-purple: #9b59b6; --c-orange: #e67e22; --c-red: #e74c3c;
             --c-dark: #2c3e50; --c-light: #ecf0f1; --c-white: #ffffff;
+        }
+        html {
+            box-sizing: border-box;
+        }
+        *, *:before, *:after {
+            box-sizing: inherit;
         }
         body {
             font-family: 'Segoe UI', Roboto, 'Noto Sans KR', sans-serif;
@@ -29,19 +35,22 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            width: 100%;
+            height: 100%;
         }
 
         /* 슬라이더 컨테이너 */
         .slider-container {
             width: 100%;
             max-width: 1100px;
-            height: 88vh; /* 높이 살짝 줄임 */
-            max-height: 780px;
+            height: 95%; 
+            max-height: 800px;
             position: relative;
             overflow: hidden;
             border-radius: 12px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             background-color: var(--c-white);
+            margin-top: 1vh;
         }
 
         /* 슬라이더 래퍼: 실제 움직이는 부분 */
@@ -93,7 +102,7 @@
         .activity-result { margin-top: 15px; font-weight: bold; min-height: 24px; font-size: 1.05em; }
         .interactive-activity button {
             padding: 10px 20px; border: none; border-radius: 5px;
-            color: var(--c-white); font-size: 1em; cursor: pointer; transition: opacity 0.2s; margin: 0 5px;
+            color: var(--c-white); font-size: 1em; cursor: pointer; transition: opacity 0.2s; margin: 5px;
         }
         .interactive-activity button:hover { opacity: 0.85; }
 
@@ -120,18 +129,68 @@
         .activity-content img { max-width: 150px; max-height: 100px; border-radius: 8px; margin-bottom: 10px; border: 2px solid #ddd; }
         .activity-content .text-block { background-color: #f0f0f0; padding: 10px; border-radius: 5px; margin-bottom: 10px; border-left: 3px solid var(--theme-color); }
         .activity-content input[type="range"], .activity-content input[type="number"] { width: 120px; margin: 5px; }
-        .activity-content textarea, .activity-content input[type="text"] { width: 80%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; font-size: 0.9em; margin-bottom: 10px;}
+        .activity-content textarea, .activity-content input[type="text"] { width: 90%; max-width: 400px; padding: 10px; border-radius: 5px; border: 1px solid #ccc; font-size: 0.9em; margin-bottom: 10px;}
         .controls-container { display: flex; flex-direction: column; align-items: center; gap: 5px; }
-        #clustering-canvas { position: relative; width: 300px; height: 150px; margin: 0 auto 10px; border: 1px solid #ccc; background: #fafafa; }
+        #clustering-canvas { position: relative; width: 90%; max-width:300px; height: 150px; margin: 0 auto 10px; border: 1px solid #ccc; background: #fafafa; }
         .cluster-dot { position: absolute; width: 10px; height: 10px; border-radius: 50%; transition: background-color 0.5s; }
-        #recognition-canvas { position: relative; width: 300px; height: 150px; margin: 0 auto 10px; background-size: cover; background-position: center; border-radius: 8px;}
+        #recognition-canvas { position: relative; width: 90%; max-width: 300px; height: 150px; margin: 0 auto 10px; background-size: cover; background-position: center; border-radius: 8px;}
         .bounding-box { position: absolute; border: 3px solid; box-sizing: border-box; opacity: 0; transition: opacity 0.5s; border-radius: 4px; }
         .bounding-box::after { content: attr(data-label); background-color: inherit; color: white; padding: 2px 5px; font-size: 12px; position: absolute; top: -22px; left: -3px; border-radius: 3px;}
 
         footer {
-            margin-top: 1vh;
+            margin: 1vh 0;
             font-size: 0.9em;
             color: #777;
+            text-align: center;
+        }
+        
+        /* --- 반응형 웹/앱을 위한 미디어 쿼리 --- */
+        @media (max-width: 768px) {
+            body {
+                overflow: auto; /* 작은 화면에서는 스크롤 허용 */
+                height: auto;
+            }
+            .main-wrapper {
+                height: auto;
+            }
+            .slider-container {
+                height: auto;
+                max-height: none;
+                width: 100%;
+                border-radius: 0;
+                box-shadow: none;
+                margin-top: 0;
+            }
+            .ml-section {
+                padding: 20px 15px; /* 여백 줄이기 */
+            }
+            .ml-section h2 {
+                font-size: 1.5em; /* 제목 크기 줄이기 */
+            }
+            .card-grid {
+                grid-template-columns: 1fr; /* 카드 한 줄에 하나씩 */
+            }
+            .nav-arrow {
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
+            }
+            #prevBtn { left: 10px; }
+            #nextBtn { right: 10px; }
+
+            .interactive-activity {
+                padding: 15px;
+            }
+            .interactive-activity button {
+                padding: 8px 15px;
+                font-size: 0.9em;
+            }
+             footer {
+                padding: 10px;
+                background-color: var(--c-white);
+                width: 100%;
+                margin: 0;
+             }
         }
 
     </style>
@@ -289,7 +348,7 @@
             classification: [
                 { type: 'image', q: '이 동물은 무엇일까요?', options: ['강아지', '고양이'], answer: '고양이', data: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Cat_November_2010-1a.jpg/1200px-Cat_November_2010-1a.jpg' },
                 { type: 'text', q: '이 메일 제목은 스팸일까요?', options: ['스팸', '정상'], answer: '스팸', data: '광고) 대박찬스! 오늘만 할인!' },
-                { type: 'image', q: '손글씨 숫자는 무엇일까요?', options: ['7', '1', '8'], answer: '7', data: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAIQSURBVHhe7dwhSgNBFMbhpjQ3sARrC4t4AS9gC9Z2FnYWXkARL2Er2Npa2IsNSN4hMvA6OIOK+/7gDcl/ySRJkv4xs4FzXn9fWw87+3nmvP7t7T1sL7/CTs/p+9A6wU6P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/-f8L5gJ2f/787c/9n/h/hP3zTCTJNk5/YAAAAASUVORK5CYII=' },
+                { type: 'image', q: '손글씨 숫자는 무엇일까요?', options: ['7', '1', '8'], answer: '7', data: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAIQSURBVHhe7dwhSgNBFMbhpjQ3sARrC4t4AS9gC9Z2FnYWXkARL2Er2Npa2IsNSN4hMvA6OIOK+/7gDcl/ySRJkv4xs4FzXn9fWw87+3nmvP7t7T1sL7/CTs/p+9A6wU6P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/p+1A7wU7P6ftQO8FOT+n7UDvBTs/-f8L5gJ2f/787c/9n/h/hP3zTCTJNk5/YAAAAASUVORK5CYII=' },
                 { type: 'text', q: '이 과일은 채소일까요, 과일일까요?', options: ['채소', '과일'], answer: '과일', data: '토마토' },
                 { type: 'data', q: '타이타닉호의 이 승객은 생존했을까요?', options: ['생존', '사망'], answer: '생존', data: '나이: 25세, 성별: 여성, 좌석: 1등석' },
             ],
