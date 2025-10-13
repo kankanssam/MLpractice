@@ -366,7 +366,7 @@
                  { q: '동물 그룹화하기', desc: '무게와 속도를 기준으로 동물들을 그룹화합니다.', dots: Array(30).fill(0).map(()=>({x: Math.random()*40, y: 60+Math.random()*30})).concat(Array(15).fill(0).map(()=>({x: 60+Math.random()*30, y: Math.random()*40}))), logic: (dot) => (parseFloat(dot.style.top) > 50 ? 'var(--c-orange)' : 'var(--c-purple)')},
             ],
             recognition: [
-                { q: '거리에서 객체 인식하기', image: 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?q=80&w=2070&auto=format&fit=crop', boxes: [{label: 'House', top: '15%', left: '15%', width: '70%', height: '70%', color: 'var(--c-blue)'}, {label: 'Tree', top: '10%', left: '75%', width: '20%', height: '70%', color: 'var(--c-green)'}]},
+                { q: '거리에서 객체 인식하기', image: 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?q=80&w=2070&auto=format&fit=crop', boxes: [{label: 'House', top: '15%', left: '15%', width: '70%', height: '75%', color: 'var(--c-blue)'}, {label: 'Tree', top: '10%', left: '80%', width: '20%', height: '70%', color: 'var(--c-green)'}]},
                 { q: '과일 인식하기', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Culinary_fruits_front_view.jpg/1920px-Culinary_fruits_front_view.jpg', boxes: [{label: 'Apple', top: '30%', left: '65%', width: '20%', height: '45%', color: 'var(--c-red)'}, {label: 'Orange', top: '60%', left: '10%', width: '30%', height: '40%', color: 'var(--c-orange)'}]},
                 { q: '얼굴에서 특징점 인식하기', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1974&auto=format&fit=crop', boxes: [{label: 'Eye', top: '0%', left: '30%', width: '15%', height: '10%', color: 'var(--c-blue)'}, {label: 'Eye', top: '0%', left: '50%', width: '15%', height: '10%', color: 'var(--c-blue)'}, {label: 'Nose', top: '15%', left: '40%', width: '15%', height: '30%', color: 'var(--c-green)'}, {label: 'Mouth', top: '45%', left: '35%', width: '25%', height: '20%', color: 'var(--c-red)'}]},
             ],
@@ -545,6 +545,7 @@
 </script>
 </body>
 </html>
+
 
 
 
